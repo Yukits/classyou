@@ -1,11 +1,11 @@
-module Classifier.TwoClassFisher
+module Classifier.MultiClassFisher
     ( train
     ) where
 
 import Classifier.LU
+import Data.List
 
--- consider there are two classes, or  C0 and C1.
--- Each point has a label(0 or 1).
+
 
 divide :: Integer -> ([[Double]], [Integer]) -> ([[Double]],[[Double]])
 divide i ([],_) = ([],[])
@@ -24,12 +24,9 @@ calcSw m (ch:ct) =  zipWith (\l1 -> \l2 -> zipWith (+) l1 l2) sw oth
             sw = map (\x -> map (*x) xm) xm
             oth = calcSw m ct
 
-sign :: Double -> Integer
-sign x | x<0 = 0
-       | otherwise = 1
 
-train :: ([[Double]], [Integer]) -> [Double] -> Integer
-train (smps, lbs) = \v -> sign ((foldl1 (+) (zipWith (*) w v)) - w0)
+train2c :: Integer -> ([[Double]], [Integer]) -> [Double] -> Double
+train2c n (smps, lbs) = \v -> ((foldl1 (+) (zipWith (*) w v)) - w0)
   where (c0,c1) = divide 0 (smps, lbs)
         m0 = average c0
         m1 = average c1
@@ -37,3 +34,15 @@ train (smps, lbs) = \v -> sign ((foldl1 (+) (zipWith (*) w v)) - w0)
         sw = zipWith (\l1 -> \l2 -> zipWith (+) l1 l2) (calcSw m0 c0) (calcSw m1 c1)
         w = luSolve sw m
         w0 = foldl (+) 0 (zipWith (*) w (map (/2.0) (zipWith (+) m1 m0)))
+
+uni :: [Integer] -> [Integer] -> [Integer]
+uni [] rs = rs
+uni (lb:lbs) rs = if (elem lb rs) then (uni lbs rs) else (uni lbs (lb:rs))
+
+
+train ::([[Double]], [Integer]) -> [Double] -> Integer
+train (smps, lbs) v = ans
+            where ulb = uni lbs []
+                  rst = map (\f-> f v) (map (\c2 -> c2 (smps, lbs)) (map train2c ulb))
+                  pair = foldr1 (\(v0,l0)-> \(v1,l1) -> if v0<v1 then (v1,l1) else (v0,l0)) (zipWith (\x -> \y ->(x,y)) rst ulb)
+                  ans = (\(v,l) -> l) pair
