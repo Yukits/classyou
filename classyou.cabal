@@ -1,9 +1,8 @@
-<<<<<<< HEAD
 name:                classyou
 version:             0.1.0.0
 synopsis:            Initial project template from stack
 description:         Please see README.md
-homepage:            https://github.com/githubuser/classyou#readme
+homepage:            https://github.com/Yukits/classyou#readme
 license:             BSD3
 license-file:        LICENSE
 author:              Author name here
@@ -39,15 +38,4 @@ test-suite classyou-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/classyou
-=======
-name:              classyou
-version:           1.0
-Build-Type:        Simple
-cabal-version:     >= 1.2
-
-executable classyou
-  main-is:         Main.hs
-  hs-source-dirs:  src
-  build-depends:   base
->>>>>>> 789b617ad82ebb33e2df16794ddef42679bb1e34
+  location: https://github.com/Yukits/classyou
